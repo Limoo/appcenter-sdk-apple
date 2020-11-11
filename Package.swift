@@ -1,4 +1,6 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.3
+// The swift-tools-version declares the minimum version of Swift required to build this package.
+
 
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
@@ -20,10 +22,13 @@ let package = Package(
         .library(
             name: "AppCenterCrashes",
             type: .static,
-            targets: ["AppCenterCrashes"])
+            targets: ["AppCenterCrashes"]),
+        .library(
+            name: "AppCenterDistribute",
+            targets: ["AppCenterDistribute"])
     ],
     dependencies: [
-        .package(url: "https://github.com/microsoft/plcrashreporter.git", .upToNextMinor(from: "1.7.2")),
+        .package(name: "PLCrashReporter", url: "https://github.com/microsoft/plcrashreporter.git", .upToNextMinor(from: "1.7.2")),
     ],
     targets: [
         .target(
@@ -62,7 +67,7 @@ let package = Package(
         ),
         .target(
             name: "AppCenterCrashes",
-            dependencies: ["AppCenter", "CrashReporter"],
+            dependencies: ["AppCenter", .product(name: "CrashReporter", package: "PLCrashReporter")],
             path: "AppCenterCrashes/AppCenterCrashes",
             exclude: ["Support"],
             cSettings: [
@@ -74,6 +79,10 @@ let package = Package(
                 .linkedFramework("UIKit", .when(platforms: [.iOS, .tvOS])),
                 .linkedFramework("AppKit", .when(platforms: [.macOS])),
             ]
+        ),
+        .binaryTarget(
+            name: "AppCenterDistribute",
+            path: "AppCenter-SDK-Apple/XCFramework/AppCenterDistribute.xcframework"
         )
     ]
 )
